@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-
 from django_filters import rest_framework as filters
 from recipes.models import Ingredient, Recipe, Tag
 
@@ -35,10 +34,10 @@ class RecipeFilter(filters.FilterSet):
 
 class IngredientFilter(filters.FilterSet):
     name = filters.CharFilter(
-        field_name='ingredient_name',
+        field_name='name',
         lookup_expr='istartwith'
     )
 
     class Meta:
         model = Ingredient
-        fields = ('ingredient_name',)
+        fields = ('name',)

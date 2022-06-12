@@ -3,11 +3,10 @@ import csv
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favorite, Ingredient, IngredientRecipe,
-                                    Recipe, ShoppingList, Tag)
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingList, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -33,23 +32,20 @@ class CustomUserViewSet(UserViewSet):
             permission_classes=(IsAuthenticated, ))
     def set_password(self, request, pk=None):
         user = self.request.user
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         serializer = PasswordSerializer(
             data=request.data,
             context={'request': request}
         )
-        if serializer.is_valid():
-            user.set_password(serializer.data['new_password'])
-            user.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        user.set_password(serializer.data['new_password'])
+        user.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(methods=['GET'],
             detail=False,
             permission_classes=(IsAuthenticated, ))
     def get_subscriptions(self, request):
-        user = request.userw
+        user = request.user
         queryset = User.objects.filter(follower__user=user)
         pages = self.paginate_queryset(queryset)
         serializer = SubscribeSerializer(
@@ -66,8 +62,6 @@ class CustomUserViewSet(UserViewSet):
         user = self.request.user
         author = get_object_or_404(User, id=id)
         subscribe = Subscribe.objects.filter(user=user, author=author)
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         if request.method == 'GET':
             if subscribe.exists():
                 data = {
@@ -120,9 +114,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    def perform_update(self, serializer):
-        serializer.save()
-
     @action(methods=['GET', 'DELETE'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
@@ -130,8 +121,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         in_favorite = Favorite.objects.filter(user=user, recipe=recipe)
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         if request.method == 'GET':
             if not in_favorite:
                 favorite = Favorite.objects.create(user=user, recipe=recipe)
@@ -149,14 +138,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def get_shopping_list(self, request, pk=None):
+        # Не вижу как вынести этот кусок
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         in_shopping_list = ShoppingList.objects.filter(
             user=user,
             recipe=recipe
         )
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         if request.method == 'GET':
             if not in_shopping_list:
                 shopping_list = ShoppingList.objects.create(
@@ -177,9 +165,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
             detail=False,
             permission_classes=(IsAuthenticated, ))
     def download_shopping_list(self, request):
-        user = self.request.user
-        if user.is_anonymous:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
         ingredients = IngredientRecipe.objects.filter(
             recipe__shopping_list__user=request.user
         ).values(

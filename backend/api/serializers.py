@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import F
 from django.shortcuts import get_object_or_404
-
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from recipes.models import Favorite, Ingredient, IngredientRecipe, Recipe, Tag
@@ -43,7 +42,7 @@ class SubscriptionsRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'recipe_name', 'recipe_image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
@@ -77,25 +76,25 @@ class SubscribeSerializer(serializers.ModelSerializer):
 class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'recipe_name', 'recipe_image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'tag_name', 'tag_color', 'tag_slug')
+        fields = ('id', 'name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ('id', 'ingredient_name', 'measurement_unit')
+        fields = ('id', 'name', 'measurement_unit')
 
 
 class IngredientRecipeListSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='ingredient.id')
     ingredient_name = serializers.CharField(
-        source='ingredient.ingredient_name'
+        source='ingredient.name'
     )
     measurement_unit = serializers.CharField(
         source='ingredient.measurement_unit'
@@ -103,7 +102,7 @@ class IngredientRecipeListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientRecipe
-        fields = ('id', 'ingredient_name', 'measurement_unit', 'amount')
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class IngredientRecipeCreateSerializer(serializers.ModelSerializer):
@@ -139,8 +138,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'tags', 'author', 'ingredients', 'is_favorited',
-                  'is_in_shopping_list', 'recipe_name', 'recipe_image',
-                  'recipe_description', 'cooking_time')
+                  'is_in_shopping_list', 'name', 'image',
+                  'description', 'cooking_time')
 
 
 class RecipeCreateSerializer(serializers.ModelSerializer):
@@ -151,10 +150,14 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     recipe_image = Base64ImageField()
 
     def validate_ingredients(self, data):
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
                 'В рецепте должен быть хотя бы один ингредиент!'
+            )
+        if len(ingredients) != len(set(ingredients)):
+            raise serializers.ValidationError(
+                'Ингредиенты в рецепте не могут повторятся!'
             )
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
@@ -189,27 +192,27 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
         for ingredient in ingredients:
-            id = ingredient.get('id')
+            ingredient_id = ingredient.get('ingredient_id')
             amount = ingredient.get('amount')
-            ingredient_id = get_object_or_404(Ingredient, id=id)
+            ingredient_id = get_object_or_404(Ingredient, id=ingredient_id)
             IngredientRecipe.objects.create(
                 recipe=recipe, ingredient=ingredient_id, amount=amount
             )
-        recipe.save()
         return recipe
 
     def update(self, instance, validated_data):
-        instance.recipe_image = validated_data.get(
-            'recipe_image',
-            instance.recipe_image
+        # Не понял твой комментарий насчет super().update()
+        instance.image = validated_data.get(
+            'image',
+            instance.image
         )
-        instance.recipe_name = validated_data.get(
-            'recipe_name',
-            instance.recipe_name
+        instance.name = validated_data.get(
+            'name',
+            instance.name
         )
-        instance.recipe_description = validated_data.get(
-            'recipe_description',
-            instance.recipe_description
+        instance.description = validated_data.get(
+            'description',
+            instance.description
         )
         instance.cooking_time = validated_data.get(
             'cooking_time',
@@ -220,6 +223,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         instance.tags.clear()
         instance.ingredients.clear()
         for tag in tags_data:
+            # Тут тоже, к сожалению, не понимаю что надо исправить.
+            # Видать пока писал код шлаз совсем замылился и проект меня 
+            # сильно нагрузил((( Можешь пожалуйста чуть более подробно
+            # описать что надо сделать.
             tag_id = tag.id
             tag_object = get_object_or_404(Tag, id=tag_id)
             instance.tags.add(tag_object)
@@ -243,11 +250,11 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('ingredients', 'tags', 'recipe_image', 'recipe_name',
-                  'recipe_description', 'cooking_time', 'author')
+        fields = ('ingredients', 'tags', 'image', 'name',
+                  'description', 'cooking_time', 'author')
 
 
 class ShoppingListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
-        fields = ('id', 'recipe_name', 'recipe_image', 'cooking_time')
+        fields = ('id', 'name', 'image', 'cooking_time')

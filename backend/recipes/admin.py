@@ -9,9 +9,9 @@ EMPTY_VALUE = '<-EMPTY->'
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     """Tag model representation in admin panel"""
-    list_display = ('id', 'tag_name', 'tag_color', 'tag_slug')
-    search_fields = ('tag_name',)
-    list_filter = ('tag_name',)
+    list_display = ('id', 'name', 'color', 'slug')
+    search_fields = ('name',)
+    list_filter = ('name',)
     empty_value_display = EMPTY_VALUE
 
 
@@ -23,9 +23,9 @@ class IngredientRecipeInline(admin.TabularInline):
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     """Ingredient model representation in admin panel"""
-    list_display = ('id', 'ingredient_name', 'measurement_unit')
-    search_fields = ('ingredient_name',)
-    list_filter = ('ingredient_name',)
+    list_display = ('id', 'name', 'measurement_unit')
+    search_fields = ('name',)
+    list_filter = ('name',)
     inlines = (IngredientRecipeInline,)
     empty_value_display = EMPTY_VALUE
 
