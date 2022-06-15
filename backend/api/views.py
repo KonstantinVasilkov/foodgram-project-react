@@ -5,13 +5,14 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingList, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+
 from users.models import Subscribe, User
+from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
+                            ShoppingList, Tag)
 
 from .filters import IngredientFilter, RecipeFilter
 from .mixins import RetrieveListViewSet
@@ -37,7 +38,7 @@ class CustomUserViewSet(UserViewSet):
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        user.set_password(serializer.data['new_password'])
+        user.set_password(serializer.validated_data['new_password'])
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -106,6 +107,27 @@ class RecipesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilter
 
+    def get_list(self, request, list_model, pk=None):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        in_list = list_model.objects.filter(user=user, recipe=recipe)
+        if request.method == 'GET':
+            if not in_list:
+                list_objects = list_model.objects.create(user=user,
+                                                         reipe=recipe)
+                if list_model == Favorite:
+                    serializer = FavoriteSerializer(list_objects.recipe)
+                else:
+                    serializer = ShoppingListSerializer(list_objects.recipe)
+                return Response(data=serializer.data,
+                                status=status.HTTP_201_CREATED)
+        elif request.method == 'DELETE':
+            if not in_list:
+                data = {'errors': 'Этого рецепта нет в списке.'}
+                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+            in_list.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeListSerializer
@@ -118,48 +140,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def get_favorite(self, request, pk=None):
-        user = self.request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        in_favorite = Favorite.objects.filter(user=user, recipe=recipe)
-        if request.method == 'GET':
-            if not in_favorite:
-                favorite = Favorite.objects.create(user=user, recipe=recipe)
-                serializer = FavoriteSerializer(favorite.recipe)
-                return Response(data=serializer.data,
-                                status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
-            if not in_favorite:
-                data = {'errors': 'Этого рецепта нет в избранных.'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            in_favorite.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        self.get_list(request=request, list_model=Favorite, pk=pk)
 
     @action(methods=['GET', 'DELETE'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def get_shopping_list(self, request, pk=None):
-        # Не вижу как вынести этот кусок
-        user = self.request.user
-        recipe = get_object_or_404(Recipe, pk=pk)
-        in_shopping_list = ShoppingList.objects.filter(
-            user=user,
-            recipe=recipe
-        )
-        if request.method == 'GET':
-            if not in_shopping_list:
-                shopping_list = ShoppingList.objects.create(
-                    user=user,
-                    recipe=recipe
-                )
-                serializer = ShoppingListSerializer(shopping_list.recipe)
-                return Response(data=serializer.data,
-                                status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
-            if not in_shopping_list:
-                data = {'errors': 'Этого рецепта нет в списке покупок.'}
-                return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
-            in_shopping_list.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        self.get_list(request=request, list_model=ShoppingList, pk=pk)
 
     @action(methods=['GET'],
             detail=False,

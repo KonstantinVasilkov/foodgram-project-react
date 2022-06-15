@@ -33,8 +33,8 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Recipe model representation in admin panel"""
-    list_display = ('id', 'recipe_name', 'author')
-    search_fields = ('author', 'recipe_name', 'tags')
+    list_display = ('id', 'name', 'author')
+    search_fields = ('author', 'name', 'tags')
     inlines = (IngredientRecipeInline,)
     empty_value_display = EMPTY_VALUE
 
