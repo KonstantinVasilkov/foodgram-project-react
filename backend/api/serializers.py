@@ -167,6 +167,15 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'нулю!'
                 )
         return data
+    
+    def _add_ingredients(self, recipe, ingredients_data):
+        for ingredient in ingredients_data:
+            ingredient_id = ingredient.get('id')
+            amount = ingredient.get('amount')
+            ingredient_id = get_object_or_404(Ingredient, id=ingredient_id)
+            IngredientRecipe.objects.create(
+                recipe=recipe, ingredient=ingredient_id, amount=amount
+            )
 
     def get_ingredients(self, obj):
         ingredients = IngredientRecipe.objects.filter(recipe=obj)
@@ -177,13 +186,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        for ingredient in ingredients_data:
-            ingredient_id = ingredient.get('id')
-            amount = ingredient.get('amount')
-            ingredient_id = get_object_or_404(Ingredient, id=ingredient_id)
-            IngredientRecipe.objects.create(
-                recipe=recipe, ingredient=ingredient_id, amount=amount
-            )
+        self._add_ingredients(recipe, ingredients_data)
         return recipe
 
     def update(self, instance, validated_data):
@@ -196,15 +199,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             tag_id = tag.id
             tag_object = get_object_or_404(Tag, id=tag_id)
             instance.tags.add(tag_object)
-        for ingredient in ingredients_data:
-            ingredient_id = ingredient.get('id')
-            amount = ingredient.get('amount')
-            ingredient_object = get_object_or_404(Ingredient, id=ingredient_id)
-            instance.ingredients.add(
-                ingredient_object,
-                through_defaults={'amount': amount}
-            )
-        instance.save()
+        self._add_ingredients(instance, ingredients_data)
         return instance
 
     def to_representation(self, instance):
