@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db.models import F
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
@@ -167,7 +166,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'нулю!'
                 )
         return data
-    
+
     def _add_ingredients(self, recipe, ingredients_data):
         for ingredient in ingredients_data:
             ingredient_id = ingredient.get('id')
