@@ -9,9 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='my_super_secret_key')
 
-DEBUG = os.getenv('DEBUG', default=True)
+DEBUG = os.getenv('DEBUG', default=False)
 
-ALLOWED_HOSTS = list(os.getenv('ALLOWED_HOSTS', ('*', )))
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='localhost').split('|')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,19 +67,19 @@ DATABASES = {
             'DB_ENGINE', default='django.db.backends.postgresql'
         ),
         'NAME': os.getenv(
-            'DB_NAME', default='default'
+            'DB_NAME', default='postgres'
         ),
         'USER': os.getenv(
-            'POSTGRES_USER', default='default'
+            'POSTGRES_USER', default='postgres'
         ),
         'PASSWORD': os.getenv(
-            'POSTGRES_PASSWORD', default='default'
+            'POSTGRES_PASSWORD', default='postgres'
         ),
         'HOST': os.getenv(
             'DB_HOST', default='localhost'
         ),
         'PORT': os.getenv(
-            'DB_PORT', default='2345'
+            'DB_PORT', default='5432'
         )
     }
 }

@@ -38,7 +38,7 @@ class PasswordSerializer(serializers.Serializer):
 
 
 class SubscriptionsRecipeSerializer(serializers.ModelSerializer):
-    recipe_image = Base64ImageField()
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -147,7 +147,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     ingredients = IngredientRecipeCreateSerializer(many=True)
-    recipe_image = Base64ImageField()
+    image = Base64ImageField()
 
     def validate_ingredients(self, data):
         ingredients = data.get('ingredients')
