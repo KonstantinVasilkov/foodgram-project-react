@@ -76,7 +76,7 @@ jobs:
               sudo docker-compose up -d --build
 
               sudo docker-compose exec -T backend python manage.py migrate
-              echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.ADMIN_USERNAME }}').exists() or User.objects.create_superuser( '${{ secrets.ADMIN_EMAIL }}', '${{ secrets.ADMIN_USERNAME }}', '${{ secrets.ADMIN_USERNAME }}', '${{ secrets.ADMIN_USERNAME }}', '${{ secrets.ADMIN_PASSWORD }}')" | sudo docker-compose exec -T backend python manage.py shell
+              echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.ADMIN_USERNAME }}').exists() or User.objects.create_superuser( '${{ secrets.ADMIN_USERNAME }}', '${{ secrets.ADMIN_EMAIL }}',  '${{ secrets.ADMIN_PASSWORD }}')" | sudo docker-compose exec -T backend python manage.py shell
               sudo docker-compose exec -T backend python manage.py fillindb --path data/ingredients.csv
               sudo docker-compose exec -T backend python manage.py collectstatic --no-input
 
