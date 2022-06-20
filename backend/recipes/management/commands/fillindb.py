@@ -15,7 +15,7 @@ class Command(BaseCommand):
         with open(path, 'rt') as f:
             reader = csv.reader(f, delimiter=',')
             for row in reader:
-                Ingredient.objects.create(
+                Ingredient.objects.get_or_create(
                     name=row[0],
                     measurement_unit=row[1]
                 )
