@@ -150,7 +150,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
 
     def validate_ingredients(self, data):
-        ingredients = data.get('ingredients')
+        ingredients = data
         if not ingredients:
             raise serializers.ValidationError(
                 'В рецепте должен быть хотя бы один ингредиент!'
