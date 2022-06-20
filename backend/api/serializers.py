@@ -155,10 +155,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'В рецепте должен быть хотя бы один ингредиент!'
             )
-        if len(ingredients) != len(set(ingredients)):
-            raise serializers.ValidationError(
-                'Ингредиенты в рецепте не могут повторятся!'
-            )
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
