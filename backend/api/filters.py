@@ -23,7 +23,7 @@ class RecipeFilter(filters.FilterSet):
     def get_is_favorited(self, queryset, name, value):
         if value:
             return models.Recipe.objects.filter(
-                favorited_recipe__user=self.request.user
+                favorite_recipe__user=self.request.user
             )
         return models.Recipe.objects.all()
 
