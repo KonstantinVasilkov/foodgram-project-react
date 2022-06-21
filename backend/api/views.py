@@ -144,15 +144,15 @@ class RecipesViewSet(viewsets.ModelViewSet):
     @action(methods=['GET', 'DELETE'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
-    def get_shopping_list(self, request, pk=None):
+    def get_shopping_cart(self, request, pk=None):
         self.get_list(request=request, list_model=ShoppingCart, pk=pk)
 
     @action(methods=['GET'],
             detail=False,
             permission_classes=(IsAuthenticated, ))
-    def download_shopping_list(self, request):
+    def download_shopping_cart(self, request):
         ingredients = IngredientRecipe.objects.filter(
-            recipe__shopping_list__user=request.user
+            recipe__shopping_cart__user=request.user
         ).values(
             'ingredients__ingredient_name',
             'ingredient__measurement_unit'

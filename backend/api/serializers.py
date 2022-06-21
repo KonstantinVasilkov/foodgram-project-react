@@ -132,7 +132,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return Recipe.objects.filter(shopping_list__user=user,
+        return Recipe.objects.filter(shopping_cart__user=user,
                                      id=obj.id).exists()
 
     class Meta:
