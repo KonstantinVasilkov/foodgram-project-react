@@ -135,13 +135,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(methods=['GET', 'DELETE'],
+    @action(methods=['GET', 'DELETE', 'POST'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def favorite(self, request, pk=None):
         self.get_list(request=request, list_model=Favorite, pk=pk)
 
-    @action(methods=['GET', 'DELETE'],
+    @action(methods=['GET', 'DELETE', 'POST'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def shopping_cart(self, request, pk=None):
