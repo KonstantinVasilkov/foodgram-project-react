@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                     ShoppingList, Tag)
+                     ShoppingCart, Tag)
 
 EMPTY_VALUE = '<-EMPTY->'
 
@@ -38,7 +38,7 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (IngredientRecipeInline,)
     empty_value_display = EMPTY_VALUE
 
-    def is_favorite(self, obj):
+    def is_favorited(self, obj):
         return Favorite.objects.filter(recipe=obj).count()
 
 
@@ -51,9 +51,9 @@ class FavoriteAdmin(admin.ModelAdmin):
     empty_value_display = EMPTY_VALUE
 
 
-@admin.register(ShoppingList)
-class ShoppingListAdmin(admin.ModelAdmin):
-    """ShoppingList model representation in admin panel"""
+@admin.register(ShoppingCart)
+class ShoppingCartAdmin(admin.ModelAdmin):
+    """ShoppingCart model representation in admin panel"""
     list_display = ('id', 'user', 'recipe')
     search_fields = ('user',)
     list_filter = ('user',)

@@ -11,7 +11,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from recipes.models import (Favorite, Ingredient, IngredientRecipe, Recipe,
-                            ShoppingList, Tag)
+                            ShoppingCart, Tag)
 from users.models import Subscribe, User
 from .filters import IngredientFilter, RecipeFilter
 from .mixins import RetrieveListViewSet
@@ -19,7 +19,7 @@ from .permissions import IsAuthorOrAdminOrReadOnly
 from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           IngredientSerializer, PasswordSerializer,
                           RecipeCreateSerializer, RecipeListSerializer,
-                          ShoppingListSerializer, SubscribeSerializer,
+                          ShoppingCartSerializer, SubscribeSerializer,
                           TagSerializer)
 
 
@@ -117,7 +117,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
                 if list_model == Favorite:
                     serializer = FavoriteSerializer(list_objects.recipe)
                 else:
-                    serializer = ShoppingListSerializer(list_objects.recipe)
+                    serializer = ShoppingCartSerializer(list_objects.recipe)
                 return Response(data=serializer.data,
                                 status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
@@ -138,14 +138,14 @@ class RecipesViewSet(viewsets.ModelViewSet):
     @action(methods=['GET', 'DELETE'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
-    def get_favorite(self, request, pk=None):
+    def get_favorited(self, request, pk=None):
         self.get_list(request=request, list_model=Favorite, pk=pk)
 
     @action(methods=['GET', 'DELETE'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def get_shopping_list(self, request, pk=None):
-        self.get_list(request=request, list_model=ShoppingList, pk=pk)
+        self.get_list(request=request, list_model=ShoppingCart, pk=pk)
 
     @action(methods=['GET'],
             detail=False,

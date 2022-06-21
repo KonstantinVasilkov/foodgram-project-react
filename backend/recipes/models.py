@@ -68,7 +68,7 @@ class Recipe(models.Model):
         verbose_name='Картинка',
         upload_to='recipes/image/'
     )
-    description = models.TextField(
+    text = models.TextField(
         verbose_name='Описание'
     )
     ingredients = models.ManyToManyField(
@@ -168,19 +168,19 @@ class Favorite(models.Model):
         verbose_name_plural = 'Избранные'
 
 
-class ShoppingList(models.Model):
-    """Model for user's shopping list"""
+class ShoppingCart(models.Model):
+    """Model for user's shopping cart"""
     user = models.ForeignKey(
         User,
         verbose_name='Пользователь',
         on_delete=models.CASCADE,
-        related_name='shopping_list'
+        related_name='shopping_cart'
     )
     recipe = models.ForeignKey(
         Recipe,
         verbose_name='Рецепт',
         on_delete=models.CASCADE,
-        related_name='shopping_list'
+        related_name='shopping_cart'
     )
 
     class Meta:
