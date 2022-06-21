@@ -139,13 +139,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def favorite(self, request, pk=None):
-        self.get_list(request=request, list_model=Favorite, pk=pk)
+        return self.get_list(request=request, list_model=Favorite, pk=pk)
 
     @action(methods=['GET', 'DELETE', 'POST'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def shopping_cart(self, request, pk=None):
-        self.get_list(request=request, list_model=ShoppingCart, pk=pk)
+        return self.get_list(request=request, list_model=ShoppingCart, pk=pk)
 
     @action(methods=['GET'],
             detail=False,
