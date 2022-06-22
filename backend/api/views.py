@@ -158,6 +158,10 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit'
         ).annotate(
             ingredient_amount=Sum('amount')
+        ).values_list(
+            'ingredient__name',
+            'ingredient__measurement_unit',
+            'ingredient_amount'
         )
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = ('attachment;'
