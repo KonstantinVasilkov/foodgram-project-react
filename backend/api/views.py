@@ -110,7 +110,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         in_list = list_model.objects.filter(user=user, recipe=recipe)
-        if request.method == 'GET':
+        if request.method in ['GET', 'POST']:
             if not in_list:
                 list_objects = list_model.objects.create(user=user,
                                                          reipe=recipe)
