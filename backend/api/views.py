@@ -113,7 +113,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         if request.method in ['GET', 'POST']:
             if not in_list:
                 list_objects = list_model.objects.create(user=user,
-                                                         reipe=recipe)
+                                                         recipe=recipe)
                 if list_model == Favorite:
                     serializer = FavoriteSerializer(list_objects.recipe)
                 else:
