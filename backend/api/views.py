@@ -110,7 +110,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
         in_list = list_model.objects.filter(user=user, recipe=recipe)
-        if request.method in ['GET', 'POST']:
+        if request.method =='POST':
             if not in_list:
                 list_objects = list_model.objects.create(user=user,
                                                          recipe=recipe)
@@ -158,10 +158,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit'
         ).annotate(
             ingredient_amount=Sum('amount')
-        ).value_list(
-            'ingredient__name',
-            'ingredient__measurement_unit',
-            'ingredient_amount'
         )
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = ('attachment;'
