@@ -55,14 +55,14 @@ class CustomUserViewSet(UserViewSet):
         )
         return self.get_paginated_response(serializer.data)
 
-    @action(methods=['GET', 'DELETE'],
+    @action(methods=['POST', 'DELETE'],
             detail=True,
             permission_classes=(IsAuthenticated, ))
     def subscribe(self, request, id):
         user = self.request.user
         author = get_object_or_404(User, id=id)
         subscribe = Subscribe.objects.filter(user=user, author=author)
-        if request.method == 'GET':
+        if request.method == 'POST':
             if subscribe.exists():
                 data = {
                     'errors': 'Вы уже подписаны на этого автора или'
