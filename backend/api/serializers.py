@@ -64,13 +64,13 @@ class SubscribeSerializer(serializers.ModelSerializer):
             recipes = obj.recipes.all()[:int(limit)]
         return SubscriptionsRecipeSerializer(recipes, many=True).data
 
-    def get_recipes_count(self, obj):
+    def get_recipe_count(self, obj):
         return obj.recipes.count()
 
     class Meta:
         model = User
         fields = ('email', 'id', 'first_name', 'last_name', 'is_subscribed',
-                  'recipes', 'recipes_count')
+                  'recipe', 'recipe_count')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
