@@ -46,7 +46,7 @@ class SubscriptionsRecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
-    is_subscribe = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
     recipe = serializers.SerializerMethodField()
     recipe_count = serializers.SerializerMethodField()
 
