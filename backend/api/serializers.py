@@ -156,6 +156,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
         ingredients_list = []
         for ingredient in ingredients:
+            print(ingredient)
             ingredient_obj = ingredient.get('id')
             amount = ingredient.get('amount')
             if amount <= 0:
