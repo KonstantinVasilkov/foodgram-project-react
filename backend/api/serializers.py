@@ -149,26 +149,27 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientRecipeCreateSerializer(many=True)
     image = Base64ImageField()
 
-    def validate_ingredients(self, data):
-        ingredients = data
+    def validate_ingredients(self, ingredients):
         if not ingredients:
             raise serializers.ValidationError(
                 'В рецепте должен быть хотя бы один ингредиент!'
             )
+        ingredients_list = []
         for ingredient in ingredients:
-            names = []
-            if int(ingredient['amount']) <= 0:
+            ingredient_obj = ingredient.get('id')
+            amount = ingredient.get('amount')
+            if amount <= 0:
                 raise serializers.ValidationError(
-                    'Количество ингредиента не может быть меньше или равно '
-                    'нулю!'
+                    'Убедитесь, что значение количества '
+                    f'ингредиента "{ingredient_obj.name}" больше 0'
                 )
-            if ingredient['id'] not in names:
-                names.append(ingredient['id'])
-            else:
+            if ingredient_obj.id in ingredients_list:
                 raise serializers.ValidationError(
-                    'Ингредиент не может повторяться в рецепте.'
+                    f'Ингредиент "{ingredient_obj.name}" '
+                    'в рецепте не должен повторяться.'
                 )
-        return data
+            ingredients_list.append(ingredient_obj.id)
+        return ingredients
 
     def _add_ingredients(self, recipe, ingredients_data):
         for ingredient in ingredients_data:
