@@ -8,6 +8,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--path', type=str)
+        parser.add_argument('--model', type=str)
 
     def handle(self, *args, **kwargs):
         path = kwargs['path']
