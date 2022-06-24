@@ -69,8 +69,8 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'id', 'first_name', 'last_name', 'is_subscribed',
-                  'recipe', 'recipe_count')
+        fields = ('email', 'id', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipe', 'recipe_count')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
