@@ -54,7 +54,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return Subscribe.objects.filter(user=user, author=obj).exists()
+        return Subscribe.objects.filter(user=obj, author=user).exists()
 
     def get_recipe(self, obj):
         limit = self.context['request'].query_params.get('recipe_limit')
