@@ -162,8 +162,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'Количество ингредиента не может быть меньше или равно '
                     'нулю!'
                 )
-            if ingredient['name'] not in names:
-                names.append(ingredient['name'])
+            if ingredient['id'] not in names:
+                names.append(ingredient['id'])
             else:
                 raise serializers.ValidationError(
                     'Ингредиент не может повторяться в рецепте.'
