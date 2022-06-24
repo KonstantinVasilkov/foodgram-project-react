@@ -1,9 +1,7 @@
 import csv
 
 from django.core.management import BaseCommand
-
-from recipes.models import Ingredient
-from recipes.models import Tag
+from recipes.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
