@@ -155,6 +155,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 'В рецепте должен быть хотя бы один ингредиент!'
             )
         ingredients_list = []
+        print(ingredients)
         for ingredient in ingredients:
             print(ingredient)
             ingredient_obj = ingredient.get('id')
