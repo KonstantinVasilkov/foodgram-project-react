@@ -159,7 +159,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             ingredient_obj = get_object_or_404(Ingredient, id=ingredient['id'])
             amount = ingredient.get('amount')
-            if amount <= 0:
+            if int(amount) <= 0:
                 raise serializers.ValidationError(
                     'Убедитесь, что значение количества '
                     f'ингредиента "{ingredient_obj.name}" больше 0'
