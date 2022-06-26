@@ -57,7 +57,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         return Subscribe.objects.filter(
-            user=obj.user, following=obj.following
+            user=obj.id, author=obj.author
         ).exists()
 
     def get_recipes(self, obj):
