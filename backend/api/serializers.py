@@ -170,7 +170,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'в рецепте не должен повторяться.'
                 )
             ingredients_list.append(ingredient_obj.id)
-        return ingredients
+        return data
 
     def _add_ingredients(self, recipe, ingredients_data):
         for ingredient in ingredients_data:
