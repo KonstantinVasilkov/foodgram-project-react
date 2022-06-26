@@ -149,47 +149,28 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientRecipeCreateSerializer(many=True)
     image = Base64ImageField()
 
-    def validate_ingredients(self, data):
-        # ingredients = self.initial_data.get('ingredients')
-        # if not ingredients:
-        #     raise serializers.ValidationError(
-        #         'В рецепте должен быть хотя бы один ингредиент!'
-        #     )
-        # ingredients_list = []
-        # for ingredient in ingredients:
-        #   ingredient_obj = get_object_or_404(Ingredient, id=ingredient['id'])
-        #     amount = ingredient.get('amount')
-        #     if int(amount) <= 0:
-        #         raise serializers.ValidationError(
-        #             'Убедитесь, что значение количества '
-        #             f'ингредиента "{ingredient_obj.name}" больше 0'
-        #         )
-        #     if ingredient_obj in ingredients_list:
-        #         raise serializers.ValidationError(
-        #             f'Ингредиент "{ingredient_obj.name}" '
-        #             'в рецепте не должен повторяться.'
-        #         )
-        #     ingredients_list.append(ingredient_obj.id)
-        # return ingredients
-        ingredients = self.initial_data.get('ingredients')
+    def validate(self, data):
+        ingredients = data.get('ingredients')
         if not ingredients:
-            raise serializers.ValidationError({
-                'ingredients': 'Нужен хоть один ингредиент для рецепта'})
-        ingredient_list = []
-        for ingredient_item in ingredients:
-            ingredient = get_object_or_404(Ingredient,
-                                           id=ingredient_item['id'])
-            if ingredient in ingredient_list:
-                raise serializers.ValidationError('Ингредиенты должны '
-                                                  'быть уникальными')
-            ingredient_list.append(ingredient)
-            if int(ingredient_item['amount']) <= 0:
-                raise serializers.ValidationError({
-                    'amount': [
-                        'Убедитесь, что количество больше либо равно 1']
-                })
-        data['ingredients'] = ingredients
-        return data
+            raise serializers.ValidationError(
+                'В рецепте должен быть хотя бы один ингредиент!'
+            )
+        ingredients_list = []
+        for ingredient in ingredients:
+            ingredient_obj = get_object_or_404(Ingredient, id=ingredient['id'])
+            amount = ingredient.get('amount')
+            if int(amount) <= 0:
+                raise serializers.ValidationError(
+                    'Убедитесь, что значение количества '
+                    f'ингредиента "{ingredient_obj.name}" больше 0'
+                )
+            if ingredient_obj in ingredients_list:
+                raise serializers.ValidationError(
+                    f'Ингредиент "{ingredient_obj.name}" '
+                    'в рецепте не должен повторяться.'
+                )
+            ingredients_list.append(ingredient_obj.id)
+        return ingredients
 
     def _add_ingredients(self, recipe, ingredients_data):
         for ingredient in ingredients_data:
