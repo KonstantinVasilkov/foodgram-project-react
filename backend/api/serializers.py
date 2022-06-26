@@ -53,7 +53,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
-    recipe_count = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
         return Subscribe.objects.filter(
@@ -68,7 +68,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
             recipes = obj.recipes.all()[:int(limit)]
         return SubscriptionsRecipeSerializer(recipes, many=True).data
 
-    def get_recipe_count(self, obj):
+    def get_recipes_count(self, obj):
         return obj.recipes.count()
 
     class Meta:
