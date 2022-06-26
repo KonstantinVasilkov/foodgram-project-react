@@ -52,7 +52,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='author.first_name')
     last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    recipe = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
     recipe_count = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
@@ -60,7 +60,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
             user=obj.user, following=obj.following
         ).exists()
 
-    def get_recipe(self, obj):
+    def get_recipes(self, obj):
         limit = self.context['request'].query_params.get('recipe_limit')
         if not limit:
             recipes = obj.recipes.all()
