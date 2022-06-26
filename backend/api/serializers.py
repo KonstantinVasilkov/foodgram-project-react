@@ -46,15 +46,19 @@ class SubscriptionsRecipeSerializer(serializers.ModelSerializer):
 
 
 class SubscribeSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
     is_subscribed = serializers.SerializerMethodField()
     recipe = serializers.SerializerMethodField()
     recipe_count = serializers.SerializerMethodField()
 
     def get_is_subscribed(self, obj):
-        user = self.context['request'].user
-        if user.is_anonymous:
-            return False
-        return Subscribe.objects.filter(user=obj, author=user).exists()
+        return Subscribe.objects.filter(
+            user=obj.user, following=obj.following
+        ).exists()
 
     def get_recipe(self, obj):
         limit = self.context['request'].query_params.get('recipe_limit')
@@ -68,9 +72,9 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return obj.recipes.count()
 
     class Meta:
-        model = User
-        fields = ('email', 'id', 'username', 'first_name', 'last_name',
-                  'is_subscribed', 'recipe', 'recipe_count')
+        model = Subscribe
+        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+                  'is_subscribed', 'recipes', 'recipes_count')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
