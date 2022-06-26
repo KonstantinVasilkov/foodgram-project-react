@@ -164,7 +164,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                     'Убедитесь, что значение количества '
                     f'ингредиента "{ingredient_obj.name}" больше 0'
                 )
-            if ingredient_obj in ingredients_list:
+            if ingredient_obj.id in ingredients_list:
                 raise serializers.ValidationError(
                     f'Ингредиент "{ingredient_obj.name}" '
                     'в рецепте не должен повторяться.'
