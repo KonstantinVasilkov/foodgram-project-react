@@ -47,7 +47,7 @@ class CustomUserViewSet(UserViewSet):
             permission_classes=(IsAuthenticated, ))
     def subscriptions(self, request):
         user = request.user
-        queryset = User.objects.filter(author__user=user)
+        queryset = User.objects.filter(following__user=user)
         pages = self.paginate_queryset(queryset)
         serializer = SubscribeSerializer(
             pages,
@@ -62,7 +62,7 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, id):
         user = self.request.user
         author = get_object_or_404(User, id=id)
-        subscribe = Subscribe.objects.filter(user=user, following=author)
+        subscribe = Subscribe.objects.filter(user=user, author=author)
         if request.method == 'POST':
             if subscribe.exists():
                 data = {
