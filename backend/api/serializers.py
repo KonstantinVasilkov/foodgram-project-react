@@ -73,7 +73,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return obj.recipes.count()
 
     class Meta:
-        model = Subscribe
+        model = User
         fields = ('id', 'email', 'username', 'first_name', 'last_name',
                   'is_subscribed', 'recipes', 'recipes_count')
 
