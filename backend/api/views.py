@@ -54,7 +54,7 @@ class CustomUserViewSet(UserViewSet):
             many=True,
             context={'request': request}
         )
-        return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
     @action(methods=['POST', 'DELETE'],
             detail=True,
